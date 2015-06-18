@@ -8,6 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace fproject\amqp;
+use PhpAmqpLib\Connection\AMQPConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * AMQPHelper provides a set of methods for sending/receiving message using PhpAmqpLib
@@ -15,18 +17,14 @@ namespace fproject\amqp;
  * @author Bui Sy Nguyen <nguyenbs@gmail.com>
  */
 class ActivityNoticeManager {
-    private static $instance;
+    /** @var  array the params contains config settings for AMQP */
+    public $amqpConfig;
 
-    /**
-     * Singleton method
-     * @return ActivityNoticeManager
-     */
-    public static function getInstance()
-    {
-        if(!isset(self::$instance))
-            self::$instance = new ActivityNoticeManager();
-        return self::$instance;
-    }
+    /** @var  array the params contains config settings of activity notification for each model classes */
+    public $activityNoticeConfig;
+
+    /** @var string the user name that dispatch the activity notice */
+    public $dispatcherName;
 
     /**
      * Send an activity notice using AMQP
@@ -37,14 +35,17 @@ class ActivityNoticeManager {
     {
         if(!isset($notice))
             return false;
-        /** @var array $setting */
-        $setting = Yii::app()->params['amqpSetting'];
-        $connection = new \PhpAmqpLib\Connection\AMQPConnection($setting['host'], $setting['port'], $setting['user'], $setting['password']);
+        $connection = new AMQPConnection(
+            $this->amqpConfig['host'],
+            $this->amqpConfig['port'],
+            $this->amqpConfig['user'],
+            $this->amqpConfig['password']);
+
         $channel = $connection->channel();
 
-        $msg = new \PhpAmqpLib\Message\AMQPMessage(json_encode($notice));
+        $msg = new AMQPMessage(json_encode($notice));
 
-        $channel->basic_publish($msg, $setting['exchangeName'], $setting['routingKey']);
+        $channel->basic_publish($msg, $this->amqpConfig['exchangeName'], $this->amqpConfig['routingKey']);
 
         $channel->close();
         $connection->close();
@@ -57,13 +58,13 @@ class ActivityNoticeManager {
      * The default implementation does nothing.
      * You may override this method to do postprocessing after record saving.
      *
-     * @param ValueObjectModel $model The model
-     * @param ActiveRecord|mixed $configType the instance of class that is configured in 'config/activityNotice.php'
+     * @param mixed $model The model
+     * @param mixed $configType the instance of class that is configured in 'config/activityNotice.php'
      * @param string $action the action, the possible values: "add", "update", "batch"
      * @param mixed $attributeNames the attributes
-     * @param ValueObjectModel[] $modelList1 if $action is "batch", this will be the inserted models, if action is "delete" and
+     * @param array $modelList1 if $action is "batch", this will be the inserted models, if action is "delete" and
      * there's multiple deletion executed, this will be the deleted models
-     * @param ValueObjectModel[] $modelList2 if $action is "batch", this will be the updated models, if action is "delete", this parameter is ignored.
+     * @param array $modelList2 if $action is "batch", this will be the updated models, if action is "delete", this parameter is ignored.
      */
     public function noticeAfterModelAction($model, $configType, $action, $attributeNames=null, $modelList1=null, $modelList2=null)
     {
@@ -77,11 +78,11 @@ class ActivityNoticeManager {
             return;
 
         $notice = new ActivityNotice([
-            'kind'=>$classId.'AUD',
-            'oriTime'=>date(DATE_ISO8601, time()),
-            'oriType'=>'user',
-            'oriId'=>(null !== Yii::app()->user) ? $id = Yii::app()->user->username : null,
-            'contentUpdatedFields'=>$attributeNames
+            'kind' => $classId.'AUD',
+            'oriTime' => date(DATE_ISO8601, time()),
+            'oriType' => 'user',
+            'oriId' => $this->dispatcherName,
+            'contentUpdatedFields' => $attributeNames
         ]);
 
         if($action==='batchSave')
@@ -168,13 +169,11 @@ class ActivityNoticeManager {
      */
     public function getActivityNoticeConfig($classId, $action, $actionAttributes)
     {
-        /** @var array $config */
-        $config = Yii::app()->params['activityNotice'];
-        if(array_key_exists($classId, $config))
+        if(array_key_exists($classId, $this->activityNoticeConfig))
         {
-            if(isset($config[$classId]['notifyActions']))
+            if(isset($this->activityNoticeConfig[$classId]['notifyActions']))
             {
-                $actionCfgList= $config[$classId]['notifyActions'];
+                $actionCfgList= $this->activityNoticeConfig[$classId]['notifyActions'];
                 if(is_string($actionCfgList))
                 {
                     if($actionCfgList === '*')
