@@ -1,7 +1,7 @@
 {
     "name":         "fproject/amqp-helper",
     "description":  "AMQP Helper Component Library",
-    "keywords":     ["AMQP", "F-Project"],
+    "keywords":     ["AMQP", "F-Project", "fproject"],
     "homepage":     "https://github.com/fproject/amqp-helper",
     "type":         "library",
     "license" : "Apache License 2.0",
@@ -14,7 +14,8 @@
     ],
     "require": {
       "php": ">=5.4.0",
-      "videlalvaro/php-amqplib": "v2.4.1"
+      "yiisoft/yii2" : "*",
+      "videlalvaro/php-amqplib": "*"
     },
 
     "autoload": {

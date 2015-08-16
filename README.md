@@ -1,4 +1,4 @@
-# Workflow Engine for Yii 2 Framework
+# AMQP Helper for sending Activity Notifications
 [![Latest Stable Version](https://poser.pugx.org/fproject/amqp-helper/v/stable)](https://packagist.org/packages/fproject/amqp-helper)
 [![Total Downloads](https://poser.pugx.org/fproject/amqp-helper/downloads)](https://packagist.org/packages/fproject/amqp-helper)
 [![Latest Unstable Version](https://poser.pugx.org/fproject/amqp-helper/v/unstable)](https://packagist.org/packages/fproject/amqp-helper)
@@ -27,7 +27,6 @@ or add this block to the *require* section of your `composer.json` file:
 
 The minimum requirement by amqp-helper:
 - Your Web server supports PHP 5.4 or above
-
 
 ##LICENSE
 
