@@ -51,32 +51,11 @@ class ActivityNoticeSerializeHelper {
         /** @var array $config */
         $config = $this->_params['activityNotice'];
         if(array_key_exists($classId, $config))
-        {
-            if(isset($config[$classId]['notifyActions']))
-            {
-                $actionCfgList= $config[$classId]['notifyActions'];
-                if(is_string($actionCfgList))
-                {
-                    if($actionCfgList === '*')
-                        return [];
-                    $actionCfgList = explode(',', $actionCfgList);
-                }
-                if(array_key_exists($action, $actionCfgList))
-                {
-                    $actionConfig = $actionCfgList[$action];
-                }
-                else
-                {
-                    foreach($actionCfgList as $key=>$a)
-                    {
-                        if(!is_string($key) && $a === $action)
-                            $actionConfig = [];
-                    }
-                }
-            }
-        }
+            $actionConfig = $this->getActionConfig($config[$classId], $action);
+        else
+            $actionConfig = null;
 
-        if(isset($actionConfig) && is_array($actionConfig))
+        if($actionConfig !== null)
         {
             if(count($actionConfig) == 0 || !isset($actionAttributes))
                 return $this->getSerializeAttributes($actionConfig);
@@ -134,6 +113,51 @@ class ActivityNoticeSerializeHelper {
         return null;
     }
 
+    private function getActionConfig($config,$action)
+    {
+        $actionConfig = null;
+        if(isset($config['notifyActions']))
+        {
+            $actionCfgList = $config['notifyActions'];
+            if(is_string($actionCfgList))
+            {
+                if($actionCfgList === '*')
+                    $actionCfgList = [$action];
+                else
+                    $actionCfgList = explode(',', $actionCfgList);
+            }
+
+            if(array_key_exists($action, $actionCfgList))
+            {
+                $actionConfig = $actionCfgList[$action];
+            }
+            else
+            {
+                foreach($actionCfgList as $key=>$a)
+                {
+                    if(!is_string($key) && $a === $action)
+                    {
+                        $actionConfig = [];
+                        break;
+                    }
+                }
+            }
+
+            if($actionConfig !== null && empty($actionConfig))
+            {
+                if(isset($config['serializeAttributes']))
+                    $actionConfig['serializeAttributes'] = $config['serializeAttributes'];
+                if(isset($config['notSerializeAttributes']))
+                    $actionConfig['notSerializeAttributes'] = $config['notSerializeAttributes'];
+                if(isset($config['listenAttributes']))
+                    $actionConfig['listenAttributes'] = $config['listenAttributes'];
+                if(isset($config['notListenAttributes']))
+                    $actionConfig['notListenAttributes'] = $config['notListenAttributes'];
+            }
+        }
+
+        return $actionConfig;
+    }
     /**
      * Get configured serialize list data of the original list data.
      * @param $listData
