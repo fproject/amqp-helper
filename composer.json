@@ -12,6 +12,9 @@
           "homepage": "http://f-project.net"
         }
     ],
+    "require-dev": {
+      "phpunit/phpunit": "*"
+    },
     "require": {
       "php": ">=5.4.0",
       "videlalvaro/php-amqplib": "*"
