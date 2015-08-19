@@ -182,6 +182,9 @@ class ActivityNoticeSerializeHelper {
      */
     public function getSerializeData($data, $config)
     {
+        if(is_null($config))
+            return null;
+
         if(isset($config['serializeAttributes']))
             $serializeAttributes = $config['serializeAttributes'];
         if(isset($config['notSerializeAttributes']))
