@@ -9,6 +9,7 @@
 namespace fproject\amqp;
 use ReflectionClass;
 use ReflectionProperty;
+use Exception;
 
 /**
  * ActivityNoticeSerializeHelper provides a set of methods for serializing data before sending to message queue
@@ -45,15 +46,16 @@ class ActivityNoticeSerializeHelper {
      * @param $action
      * @param $actionAttributes
      * @return array|null
+     * @throws Exception
      */
     public function getActivityNoticeConfig($classId, $action, $actionAttributes)
     {
+        if(empty($this->_params) || !isset($this->_params['activityNotice']))
+            throw new Exception('Invalid activityNotice configuration.');
+
         /** @var array $config */
         $config = $this->_params['activityNotice'];
-        if(array_key_exists($classId, $config))
-            $actionConfig = $this->getActionConfig($config[$classId], $action);
-        else
-            $actionConfig = null;
+        $actionConfig = $this->getActionConfig($classId,$config, $action);
 
         if($actionConfig !== null)
         {
@@ -113,8 +115,13 @@ class ActivityNoticeSerializeHelper {
         return null;
     }
 
-    private function getActionConfig($config,$action)
+    private function getActionConfig($classId,$configRoot,$action)
     {
+        if(array_key_exists($classId, $configRoot))
+            $config = $configRoot[$classId];
+        else
+            return null;
+
         $actionConfig = null;
         if(isset($config['notifyActions']))
         {
@@ -143,21 +150,56 @@ class ActivityNoticeSerializeHelper {
                 }
             }
 
-            if($actionConfig !== null && empty($actionConfig))
-            {
-                if(isset($config['serializeAttributes']))
-                    $actionConfig['serializeAttributes'] = $config['serializeAttributes'];
-                if(isset($config['notSerializeAttributes']))
-                    $actionConfig['notSerializeAttributes'] = $config['notSerializeAttributes'];
-                if(isset($config['listenAttributes']))
-                    $actionConfig['listenAttributes'] = $config['listenAttributes'];
-                if(isset($config['notListenAttributes']))
-                    $actionConfig['notListenAttributes'] = $config['notListenAttributes'];
-            }
+            $actionConfig = $this->mergeConfig($config, 'serializeAttributes', $actionConfig);
+            $actionConfig = $this->mergeConfig($config, 'notSerializeAttributes', $actionConfig);
+            $actionConfig = $this->mergeConfig($config, 'listenAttributes', $actionConfig);
+            $actionConfig = $this->mergeConfig($config, 'notListenAttributes', $actionConfig);
+        }
+
+        if(isset($configRoot['*']))
+        {
+            $globalConfig = $configRoot['*'];
+            $actionConfig = $this->mergeConfig($globalConfig, 'serializeAttributes', $actionConfig);
+            $actionConfig = $this->mergeConfig($globalConfig, 'notSerializeAttributes', $actionConfig);
+            $actionConfig = $this->mergeConfig($globalConfig, 'listenAttributes', $actionConfig);
+            $actionConfig = $this->mergeConfig($globalConfig, 'notListenAttributes', $actionConfig);
         }
 
         return $actionConfig;
     }
+
+    private function mergeConfig($globalConfig, $attSet, $cfg)
+    {
+        if(isset($globalConfig[$attSet]))
+        {
+            $src = $globalConfig[$attSet];
+            if(is_string($src))
+            {
+                if($src === '*')
+                {
+                    $cfg[$attSet] = '*';
+                    return $cfg;
+                }
+                $src = explode(',', $src);
+            }
+
+            if(!isset($cfg))
+                $cfg = [$attSet=>[]];
+            elseif(!isset($cfg[$attSet]))
+                $cfg[$attSet] = [];
+            elseif($cfg[$attSet] === '*')
+                return $cfg;
+            elseif(is_string($cfg[$attSet]))
+                $cfg[$attSet] = explode(',', $cfg[$attSet]);
+            foreach($src as $value)
+            {
+                if(!in_array($value, $cfg[$attSet]))
+                    $cfg[$attSet][] = $value;
+            }
+        }
+        return $cfg;
+    }
+
     /**
      * Get configured serialize list data of the original list data.
      * @param $listData
@@ -182,7 +224,7 @@ class ActivityNoticeSerializeHelper {
      */
     public function getSerializeData($data, $config)
     {
-        if(is_null($config))
+        if(is_null($config) || !is_array($config))
             return null;
 
         if(isset($config['serializeAttributes']))
@@ -201,7 +243,7 @@ class ActivityNoticeSerializeHelper {
             {
                 if((is_object($data) && property_exists($data, $att)) || (is_array($data) && array_key_exists($att, $data)))
                 {
-                    if(!isset($notSerializeAttributes) || !array_search($att, $notSerializeAttributes))
+                    if(!isset($notSerializeAttributes) || !in_array($att, $notSerializeAttributes))
                     {
                         if(is_object($data))
                             $serializeData[$att] = $data->{$att};
@@ -226,7 +268,7 @@ class ActivityNoticeSerializeHelper {
                 foreach($properties as $prop)
                 {
                     $att = $prop->name;
-                    if(!array_search($att, $notSerializeAttributes))
+                    if(!in_array($att, $notSerializeAttributes))
                         $serializeData[$att] = $data->{$att};
                     else
                         $serializeData[$att] = null;
@@ -236,7 +278,7 @@ class ActivityNoticeSerializeHelper {
             {
                 foreach($data as $att=>$value)
                 {
-                    if(!array_search($att, $notSerializeAttributes))
+                    if(!in_array($att, $notSerializeAttributes))
                         $serializeData[$att] = $value;
                     else
                         $serializeData[$att] = null;
