@@ -256,19 +256,53 @@ class ActivityNoticeSerializer {
             $serializeData = [];
             if(isset($serializeAttributes))
             {
-                foreach($serializeAttributes as $att)
+                foreach($serializeAttributes as $attChain)
                 {
-                    if((is_object($data) && property_exists($data, $att)) || (is_array($data) && array_key_exists($att, $data)))
+                    $attChain = explode('.', $attChain);
+                    if(!isset($notSerializeAttributes) || !in_array($attChain[0], $notSerializeAttributes))
                     {
-                        if(!isset($notSerializeAttributes) || !in_array($att, $notSerializeAttributes))
+                        $cnt = count($attChain);
+                        $dt = $data;
+                        $sd = &$serializeData;
+                        $i = 0;
+                        while($i < $cnt-1)
                         {
-                            if(is_object($data))
-                                $serializeData[$att] = $data->{$att};
+                            $att = $attChain[$i];
+                            if(is_object($dt) && property_exists($dt, $att))
+                            {
+                                if(!isset($sd[$att]))
+                                    $sd[$att] = [];
+                                $dt = $dt->{$att};
+                            }
+                            elseif(is_array($dt) && array_key_exists($att, $dt))
+                            {
+                                if(!isset($sd[$att]))
+                                    $sd[$att] = [];
+                                $dt = $dt[$att];
+                            }
                             else
-                                $serializeData[$att] = $data[$att];
+                            {
+                                break;
+                            }
+                            $sd = &$sd[$att];
+                            $i++;
                         }
-                        else
-                            $serializeData[$att] = null;
+                        if($i == $cnt-1)
+                        {
+                            $att = $attChain[$i];
+                            if(is_object($dt) && property_exists($dt, $att))
+                            {
+                                $sd[$att] = $dt->{$att};
+                            }
+                            elseif(is_array($dt) && array_key_exists($att, $dt))
+                            {
+                                $sd[$att] = $dt[$att];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $serializeData[$attChain[0]] = null;
                     }
                 }
             }
