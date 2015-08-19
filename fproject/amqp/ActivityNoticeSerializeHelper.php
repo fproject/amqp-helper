@@ -251,55 +251,58 @@ class ActivityNoticeSerializeHelper {
         {
             $serializeData = $data;
         }
-        elseif(isset($serializeAttributes))
-        {
-            $serializeData = [];
-            foreach($serializeAttributes as $att)
-            {
-                if((is_object($data) && property_exists($data, $att)) || (is_array($data) && array_key_exists($att, $data)))
-                {
-                    if(!isset($notSerializeAttributes) || !in_array($att, $notSerializeAttributes))
-                    {
-                        if(is_object($data))
-                            $serializeData[$att] = $data->{$att};
-                        else
-                            $serializeData[$att] = $data[$att];
-                    }
-                    else
-                        $serializeData[$att] = null;
-                }
-            }
-        }
         else
         {
             $serializeData = [];
-            if(is_object($data))
+            if(isset($serializeAttributes))
             {
-                $reflection = new ReflectionClass($data);
-                $public = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
-                $static = $reflection->getProperties(ReflectionProperty::IS_STATIC);
-                $properties = array_diff($public, $static);
-                /** @var ReflectionProperty $prop */
-                foreach($properties as $prop)
+                foreach($serializeAttributes as $att)
                 {
-                    $att = $prop->name;
-                    if(!in_array($att, $notSerializeAttributes))
-                        $serializeData[$att] = $data->{$att};
-                    else
-                        $serializeData[$att] = null;
+                    if((is_object($data) && property_exists($data, $att)) || (is_array($data) && array_key_exists($att, $data)))
+                    {
+                        if(!isset($notSerializeAttributes) || !in_array($att, $notSerializeAttributes))
+                        {
+                            if(is_object($data))
+                                $serializeData[$att] = $data->{$att};
+                            else
+                                $serializeData[$att] = $data[$att];
+                        }
+                        else
+                            $serializeData[$att] = null;
+                    }
                 }
             }
-            elseif(is_array($data))
+            else
             {
-                foreach($data as $att=>$value)
+                if(is_object($data))
                 {
-                    if(!in_array($att, $notSerializeAttributes))
-                        $serializeData[$att] = $value;
-                    else
-                        $serializeData[$att] = null;
+                    $reflection = new ReflectionClass($data);
+                    $public = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+                    $static = $reflection->getProperties(ReflectionProperty::IS_STATIC);
+                    $properties = array_diff($public, $static);
+                    /** @var ReflectionProperty $prop */
+                    foreach($properties as $prop)
+                    {
+                        $att = $prop->name;
+                        if(!in_array($att, $notSerializeAttributes))
+                            $serializeData[$att] = $data->{$att};
+                        else
+                            $serializeData[$att] = null;
+                    }
+                }
+                elseif(is_array($data))
+                {
+                    foreach($data as $att=>$value)
+                    {
+                        if(!in_array($att, $notSerializeAttributes))
+                            $serializeData[$att] = $value;
+                        else
+                            $serializeData[$att] = null;
+                    }
                 }
             }
         }
+
 
         return $serializeData;
     }
