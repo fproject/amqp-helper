@@ -130,6 +130,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('model1',$data);
         $this->assertNotNull($data['model1']);
         $this->assertTrue(is_array($data['model1']));
+        $this->assertArrayHasKey('field1',$data['model1']);
         $this->assertEquals('ABC',$data['model1']['field1']);
         $this->assertArrayNotHasKey('field2',$data['model1']);
     }
@@ -201,6 +202,38 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('field2',$data);
         $this->assertArrayHasKey('field1',$data);
         $this->assertInstanceOf('DateTime',$data['field1']);
+    }
+
+    public function testGetSerializeData07()
+    {
+        $this->params = [
+            'activityNotice' => [
+                'testModel02' => [
+                    'notifyActions' => '*',
+                    'serializeAttributes' => 'jsonData,model1.field1,model1.field3,workCalendar,resources,projectTasks'
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializer($this->params);
+        $model = new TestModel02();
+        $model->model1 = new TestModel01();
+        $model->model1->field1 = "ABC";
+        $model->model1->field2 = "XYZ";
+        $model->model1->field3 = "GHI";
+
+        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayHasKey('model1',$data);
+        $this->assertNotNull($data['model1']);
+        $this->assertTrue(is_array($data['model1']));
+        $this->assertArrayHasKey('field1',$data['model1']);
+        $this->assertEquals('ABC',$data['model1']['field1']);
+        $this->assertArrayNotHasKey('field2',$data['model1']);
+        $this->assertArrayHasKey('field3',$data['model1']);
+        $this->assertEquals('GHI',$data['model1']['field3']);
     }
 }
 ?>
