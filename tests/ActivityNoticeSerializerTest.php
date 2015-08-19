@@ -121,6 +121,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $model = new TestModel02();
         $model->model1 = new TestModel01();
         $model->model1->field1 = "ABC";
+        $model->model1->field2 = "XYZ";
 
         $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
 
@@ -128,8 +129,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
 
         $this->assertArrayHasKey('model1',$data);
         $this->assertNotNull($data['model1']);
-        $this->assertInstanceOf('TestModel01', $data['model1']);
-        $this->assertEquals('ABC',$data['model1']->{'field1'});
+        $this->assertTrue(is_array($data['model1']));
+        $this->assertEquals('ABC',$data['model1']['field1']);
+        $this->assertArrayNotHasKey('field2',$data['model1']);
     }
 
     public function testGetSerializeData05()
