@@ -68,6 +68,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
 
         $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
         $data = $helper->getSerializeData($model, $config);
+        $this->assertArrayNotHasKey('jsonData',$data);
         $this->assertArrayNotHasKey('_explicitType',$data);
         $this->assertArrayNotHasKey('group',$data);
         $this->assertArrayHasKey('id',$data);
