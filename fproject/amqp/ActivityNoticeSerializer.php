@@ -65,7 +65,8 @@ class ActivityNoticeSerializer {
         $actionConfig = $this->getActionConfig($classId,$config, $action);
 
         $attributeConfig = $this->getAttributeConfig($actionConfig, $actionAttributes);
-        $this->_configCache[$cacheKey] = $attributeConfig;
+        if(isset($attributeConfig))
+            $this->_configCache[$cacheKey] = $attributeConfig;
 
         return $attributeConfig;
     }
