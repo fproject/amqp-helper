@@ -131,5 +131,74 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('TestModel01', $data['model1']);
         $this->assertEquals('ABC',$data['model1']->{'field1'});
     }
+
+    public function testGetSerializeData05()
+    {
+        $this->params = [
+            'activityNotice' => [
+                '*' => [
+                    'notSerializeAttributes' => '_explicitType'
+                ],
+                'testModel01' => [
+                    'notifyActions' => '*',
+                    'serializeAttributes' => 'field1,field2'
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $model = [
+            'field1'=>new DateTime(),
+            'field2' => 'ABC',
+            'field3' => 123,
+            '_explicitType' => "TestModel01"
+        ];
+
+        $config = $helper->getActivityNoticeConfig('testModel01', 'add', null);
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayNotHasKey('_explicitType',$data);
+        $this->assertArrayNotHasKey('field3',$data);
+        $this->assertArrayHasKey('field2',$data);
+        $this->assertArrayHasKey('field1',$data);
+        $this->assertInstanceOf('DateTime',$data['field1']);
+    }
+
+    public function testGetSerializeData06()
+    {
+        $this->params = [
+            'activityNotice' => [
+                '*' => [
+                    'notSerializeAttributes' => '_explicitType'
+                ],
+                'testModel01' => [
+                    'notifyActions' => [
+                        'add'=>[
+                            'notSerializeAttributes'=>'field3'
+                        ]
+                    ]
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $model = [
+            'field1'=>new DateTime(),
+            'field2' => 'ABC',
+            'field3' => 123,
+            '_explicitType' => "TestModel01"
+        ];
+
+        $config = $helper->getActivityNoticeConfig('testModel01', 'add', null);
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayHasKey('_explicitType',$data);
+        $this->assertNull($data['_explicitType']);
+        $this->assertArrayHasKey('field3',$data);
+        $this->assertNull($data['field3']);
+        $this->assertArrayHasKey('field2',$data);
+        $this->assertArrayHasKey('field1',$data);
+        $this->assertInstanceOf('DateTime',$data['field1']);
+    }
 }
 ?>
