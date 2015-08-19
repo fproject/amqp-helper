@@ -1,5 +1,5 @@
 <?php
-use fproject\amqp\ActivityNoticeSerializeHelper;
+use fproject\amqp\ActivityNoticeSerializer;
 include_once('TestModel01.php');
 include_once('TestModel02.php');
 class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
@@ -20,7 +20,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
             ]
         ];
 
-        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $helper = new ActivityNoticeSerializer($this->params);
         $model = new TestModel01();
         $model->field1 = new DateTime();
         $model->field2 = 'ABC';
@@ -59,7 +59,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
             ]
         ];
 
-        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $helper = new ActivityNoticeSerializer($this->params);
         $model = new TestModel02();
         $model->id = '001';
         $model->endTime = new DateTime();
@@ -88,7 +88,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
             'activityNotice' => []
         ];
 
-        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $helper = new ActivityNoticeSerializer($this->params);
         $model = new TestModel02();
         $model->id = '001';
         $model->endTime = new DateTime();
@@ -117,7 +117,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
             ]
         ];
 
-        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $helper = new ActivityNoticeSerializer($this->params);
         $model = new TestModel02();
         $model->model1 = new TestModel01();
         $model->model1->field1 = "ABC";
@@ -146,7 +146,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
             ]
         ];
 
-        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $helper = new ActivityNoticeSerializer($this->params);
         $model = [
             'field1'=>new DateTime(),
             'field2' => 'ABC',
@@ -181,7 +181,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
             ]
         ];
 
-        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $helper = new ActivityNoticeSerializer($this->params);
         $model = [
             'field1'=>new DateTime(),
             'field2' => 'ABC',

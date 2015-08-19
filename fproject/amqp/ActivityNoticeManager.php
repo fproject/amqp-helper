@@ -73,7 +73,7 @@ class ActivityNoticeManager {
 
         $noticeAction = ($action === 'delete' && isset($modelList1)) ? 'batchDelete' : $action;
 
-        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $helper = new ActivityNoticeSerializer($this->params);
 
         $config = $helper->getActivityNoticeConfig($classId, $noticeAction, $attributeNames);
 

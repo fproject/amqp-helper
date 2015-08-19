@@ -16,7 +16,7 @@ use Exception;
  *
  * @author Bui Sy Nguyen <nguyenbs@gmail.com>
  */
-class ActivityNoticeSerializeHelper {
+class ActivityNoticeSerializer {
    private $_configCache;
 
     public function __construct($params)
@@ -30,13 +30,13 @@ class ActivityNoticeSerializeHelper {
     /**
      * Singleton method
      * @param null $params
-     * @return ActivityNoticeSerializeHelper
+     * @return ActivityNoticeSerializer
      */
     public static function getInstance($params=null)
     {
         if(!isset(self::$instance))
         {
-            self::$instance = new ActivityNoticeSerializeHelper($params);
+            self::$instance = new ActivityNoticeSerializer($params);
         }
         return self::$instance;
     }
