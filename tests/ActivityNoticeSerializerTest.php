@@ -2,7 +2,7 @@
 use fproject\amqp\ActivityNoticeSerializer;
 include_once('TestModel01.php');
 include_once('TestModel02.php');
-class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
+class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
 {
     private $params = [];
 
