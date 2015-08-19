@@ -17,12 +17,15 @@ use Exception;
  * @author Bui Sy Nguyen <nguyenbs@gmail.com>
  */
 class ActivityNoticeSerializeHelper {
-    private static $instance;
+   private $_configCache;
 
     public function __construct($params)
     {
         $this->_params = $params;
+        $this->_configCache = [];
     }
+
+    private static $instance;
 
     /**
      * Singleton method
@@ -42,14 +45,18 @@ class ActivityNoticeSerializeHelper {
 
     /**
      * Return null if activity is not configured for given parameters.
-     * @param $classId
-     * @param $action
-     * @param $actionAttributes
+     * @param string $classId
+     * @param string $action
+     * @param array $actionAttributes
      * @return array|null
      * @throws Exception
      */
     public function getActivityNoticeConfig($classId, $action, $actionAttributes)
     {
+        $cacheKey = $classId.'.'.$action.'.'.(is_array($actionAttributes) ? implode(',',$actionAttributes) : '');
+        if(array_key_exists($cacheKey, $this->_configCache))
+            return $this->_configCache[$cacheKey];
+
         if(empty($this->_params) || !isset($this->_params['activityNotice']))
             throw new Exception('Invalid activityNotice configuration.');
 
@@ -57,6 +64,14 @@ class ActivityNoticeSerializeHelper {
         $config = $this->_params['activityNotice'];
         $actionConfig = $this->getActionConfig($classId,$config, $action);
 
+        $attributeConfig = $this->getAttributeConfig($actionConfig, $actionAttributes);
+        $this->_configCache[$cacheKey] = $attributeConfig;
+
+        return $attributeConfig;
+    }
+
+    private function getAttributeConfig($actionConfig, $actionAttributes)
+    {
         if($actionConfig !== null)
         {
             if(count($actionConfig) == 0 || !isset($actionAttributes))
