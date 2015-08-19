@@ -265,9 +265,11 @@ class ActivityNoticeSerializeHelper {
                 $notSerializeAttributes = explode(',', $notSerializeAttributes);
         }
 
-        return [
-            'serializeAttributes' => $serializeAttributes,
-            'notSerializeAttributes'=> $notSerializeAttributes
-        ];
+        $sa = [];
+        if($serializeAttributes !== null)
+            $sa['serializeAttributes'] = $serializeAttributes;
+        if($notSerializeAttributes !== null)
+            $sa['notSerializeAttributes'] = $notSerializeAttributes;
+        return $sa;
     }
 }
