@@ -29,6 +29,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
 
         $config = $helper->getActivityNoticeConfig('testModel01', 'add', null);
         $data = $helper->getSerializeData($model, $config);
+
         $this->assertArrayNotHasKey('_explicitType',$data);
         $this->assertArrayNotHasKey('field3',$data);
         $this->assertArrayHasKey('field2',$data);
@@ -67,13 +68,36 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
         $model->_explicitType = "TestModel02";
 
         $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+
         $data = $helper->getSerializeData($model, $config);
-        $this->assertArrayNotHasKey('jsonData',$data);
-        $this->assertArrayNotHasKey('_explicitType',$data);
-        $this->assertArrayNotHasKey('group',$data);
+
+        $this->assertArrayHasKey('jsonData',$data);
+        $this->assertNull($data['jsonData']);
+        $this->assertArrayHasKey('_explicitType',$data);
+        $this->assertNull($data['_explicitType']);
+        $this->assertArrayHasKey('group',$data);
+        $this->assertNull($data['group']);
         $this->assertArrayHasKey('id',$data);
         $this->assertArrayHasKey('endTime',$data);
         $this->assertInstanceOf('DateTime',$data['endTime']);
+    }
+
+    public function testGetSerializeData03()
+    {
+        $this->params = [
+            'activityNotice' => []
+        ];
+
+        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $model = new TestModel02();
+        $model->id = '001';
+        $model->endTime = new DateTime();
+        $model->jsonData = '{}';
+        $model->name = 'Name 001';
+        $model->_explicitType = "TestModel02";
+        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+        $data = $helper->getSerializeData($model, $config);
+        $this->assertEmpty($data);
     }
 }
 ?>
