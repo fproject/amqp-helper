@@ -52,7 +52,8 @@ class TestModel02
     /** @var integer $status */
     public $status;
 
-    public $group;
+    /** @var  TestModel01 $model1 */
+    public $model1;
 
     public $issueWorkflow;
 

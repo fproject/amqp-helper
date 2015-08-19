@@ -52,7 +52,7 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
                             //'listenAttributes' => '*',
                             'notListenAttributes' => 'jsonData',
                             //'serializeAttributes' => '*',
-                            'notSerializeAttributes' => 'jsonData,group,workCalendar,resources,projectTasks'
+                            'notSerializeAttributes' => 'jsonData,model1,workCalendar,resources,projectTasks'
                         ]
                     ]
                 ],
@@ -75,8 +75,8 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
         $this->assertNull($data['jsonData']);
         $this->assertArrayHasKey('_explicitType',$data);
         $this->assertNull($data['_explicitType']);
-        $this->assertArrayHasKey('group',$data);
-        $this->assertNull($data['group']);
+        $this->assertArrayHasKey('model1',$data);
+        $this->assertNull($data['model1']);
         $this->assertArrayHasKey('id',$data);
         $this->assertArrayHasKey('endTime',$data);
         $this->assertInstanceOf('DateTime',$data['endTime']);
@@ -98,6 +98,38 @@ class ActivityNoticeSerializeHelperTest extends PHPUnit_Framework_TestCase
         $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
         $data = $helper->getSerializeData($model, $config);
         $this->assertEmpty($data);
+    }
+
+    public function testGetSerializeData04()
+    {
+        $this->params = [
+            'activityNotice' => [
+                'testModel02' => [
+                    'notifyActions' => [//Use '*' to indicate all actions will be applied
+                        'delete' => ['serializeAttributes' => 'id'],
+                        'add',//Use simple string value to indicate all attributes will be applied
+                        'update' => [
+                            //'serializeAttributes' => '*',
+                            'serializeAttributes' => 'jsonData,model1.field1,workCalendar,resources,projectTasks'
+                        ]
+                    ]
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializeHelper($this->params);
+        $model = new TestModel02();
+        $model->model1 = new TestModel01();
+        $model->model1->field1 = "ABC";
+
+        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayHasKey('model1',$data);
+        $this->assertNotNull($data['model1']);
+        $this->assertInstanceOf('TestModel01', $data['model1']);
+        $this->assertEquals('ABC',$data['model1']->{'field1'});
     }
 }
 ?>
