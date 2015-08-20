@@ -236,5 +236,40 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('field3',$data['model1']);
         $this->assertEquals('GHI',$data['model1']['field3']);
     }
+
+    public function testGetActivityNoticeConfig01()
+    {
+        $this->params = [
+            'activityNotice' => [
+                '*' => [
+                    'notSerializeAttributes' => '_explicitType'
+                ],
+                'testModel01' => [
+                    'notifyActions' => [
+                        'add,update,batchSave'=>[
+                            'notSerializeAttributes'=>'field3,field2'
+                        ]
+                    ]
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializer($this->params);
+
+        $actions = ['add','update','batchSave'];
+        foreach($actions as $action)
+        {
+            $config = $helper->getActivityNoticeConfig('testModel01', $action, null);
+
+            $this->assertNotEmpty($config);
+
+            $this->assertArrayHasKey('notSerializeAttributes',$config);
+            $this->assertTrue(is_array($config['notSerializeAttributes']));
+            $this->assertCount(3, $config['notSerializeAttributes']);
+            $this->assertEquals('field3',$config['notSerializeAttributes'][0]);
+            $this->assertEquals('field2',$config['notSerializeAttributes'][1]);
+            $this->assertEquals('_explicitType',$config['notSerializeAttributes'][2]);
+        }
+    }
 }
 ?>
