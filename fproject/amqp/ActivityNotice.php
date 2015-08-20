@@ -21,22 +21,19 @@ class ActivityNotice {
     /** @var  string $kind */
     public $kind;
 
-    /** @var  string $action */
+    /** @var  string $action the action of activity notice */
     public $action;
 
-    /** @var  string $oriType */
-    public $oriType;
+    /** @var  mixed $dispatchTime the dispatched time of the notice*/
+    public $dispatchTime;
 
-    /** @var  string $oriId */
-    public $oriId;
+    /** @var  mixed $dispatcher the dispatcher, often be the currently logged in user */
+    public $dispatcher;
 
-    /** @var  mixed $oriTime */
-    public $oriTime;
-
-    /** @var  mixed $content */
+    /** @var  mixed $content the content of activity */
     public $content;
 
-    /** @var  string[] $contentUpdatedFields */
+    /** @var  string[] $contentUpdatedFields the list of updated fields of the content */
     public $contentUpdatedFields;
 
     /**
