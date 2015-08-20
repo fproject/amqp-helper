@@ -25,7 +25,7 @@ class ActivityNoticeManager {
      * This abstract method should be overridden by subclasses
      * @return string the user name
      */
-    public function getDispatcherName()
+    public function getDispatcher()
     {
         return null;
     }
@@ -82,9 +82,8 @@ class ActivityNoticeManager {
 
         $notice = new ActivityNotice([
             'kind'=>$classId.'AUD',
-            'oriTime'=>date(DATE_ISO8601, time()),
-            'oriType'=>'user',
-            'oriId'=>$this->getDispatcherName(),
+            'dispatchTime'=>date(DATE_ISO8601, time()),
+            'dispatcher'=>$this->getDispatcher(),
             'contentUpdatedFields'=>$attributeNames
         ]);
 
