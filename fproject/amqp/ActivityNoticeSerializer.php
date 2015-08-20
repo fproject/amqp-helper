@@ -163,6 +163,23 @@ class ActivityNoticeSerializer {
                         $actionConfig = [];
                         break;
                     }
+                    elseif(is_string($key))
+                    {
+                        $keys = explode(',',$key);
+                        if(count($keys) > 1)
+                        {
+                            foreach($keys as $k)
+                            {
+                                if($k === $action)
+                                {
+                                    $actionConfig = $actionCfgList[$key];
+                                    break;
+                                }
+                            }
+                            if($actionConfig !== null)
+                                break;
+                        }
+                    }
                 }
             }
 
