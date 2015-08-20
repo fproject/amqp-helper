@@ -210,7 +210,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
             'activityNotice' => [
                 'testModel02' => [
                     'notifyActions' => '*',
-                    'serializeAttributes' => 'jsonData,model1.field1,model1.field3,workCalendar,resources,projectTasks'
+                    'serializeAttributes' => 'code,jsonData,model1.field1,model1.field3,workCalendar,resources,projectTasks'
                 ],
             ]
         ];
@@ -221,6 +221,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $model->model1->field1 = "ABC";
         $model->model1->field2 = "XYZ";
         $model->model1->field3 = "GHI";
+        $model->code = null;
 
         $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
 
