@@ -272,7 +272,14 @@ class ActivityNoticeSerializer {
                             if(is_object($dt) && property_exists($dt, $att))
                             {
                                 if(!isset($sd[$att]))
+                                {
+                                    if(empty($dt->{$att}))
+                                    {
+                                        $sd[$att] = null;
+                                        break;
+                                    }
                                     $sd[$att] = [];
+                                }
                                 $dt = $dt->{$att};
                             }
                             elseif(is_array($dt) && array_key_exists($att, $dt))
