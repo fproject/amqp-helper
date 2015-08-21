@@ -367,6 +367,26 @@ class ActivityNoticeSerializer {
     }
 
     /**
+     * Recursively get an associative array of class properties by property name => ReflectionProperty() object
+     * including inherited ones from extended classes
+     * @param string $classOrInstance Class name or an instance of the class
+     * @return array
+     */
+    private function getClassPublicProperties($classOrInstance){
+        $reflection = new ReflectionClass($classOrInstance);
+        $public = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
+        $static = $reflection->getProperties(ReflectionProperty::IS_STATIC);
+        $properties = array_diff($public, $static);
+
+        if($parentClass = $reflection->getParentClass()){
+            $parentProps = $this->getClassPublicProperties($parentClass->getName());//RECURSION
+            if(count($parentProps) > 0)
+                $properties = array_merge($parentProps, $properties);
+        }
+        return $properties;
+    }
+
+    /**
      * @param $actionConfig
      * @return array
      */
