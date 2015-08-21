@@ -13,7 +13,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
                 '*' => [
                     'notSerializeAttributes' => '_explicitType'
                 ],
-                'testModel01' => [
+                'TestModel01' => [
                     'notifyActions' => '*',
                     'serializeAttributes' => 'field1,field2'
                 ],
@@ -27,7 +27,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $model->field3 = 123;
         $model->_explicitType = "TestModel01";
 
-        $config = $helper->getActivityNoticeConfig('testModel01', 'add', null);
+        $config = $helper->getActivityNoticeConfig('TestModel01', 'add', null);
         $data = $helper->getSerializeData($model, $config);
 
         $this->assertArrayNotHasKey('_explicitType',$data);
@@ -44,7 +44,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
                 '*' => [
                     'notSerializeAttributes' => '_explicitType'
                 ],
-                'testModel02' => [
+                'TestModel02' => [
                     'notifyActions' => [//Use '*' to indicate all actions will be applied
                         'delete' => ['serializeAttributes' => 'id'],
                         'add',//Use simple string value to indicate all attributes will be applied
@@ -67,7 +67,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $model->name = 'Name 001';
         $model->_explicitType = "TestModel02";
 
-        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+        $config = $helper->getActivityNoticeConfig('TestModel02', 'update', null);
 
         $data = $helper->getSerializeData($model, $config);
 
@@ -95,7 +95,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $model->jsonData = '{}';
         $model->name = 'Name 001';
         $model->_explicitType = "TestModel02";
-        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+        $config = $helper->getActivityNoticeConfig('TestModel02', 'update', null);
         $data = $helper->getSerializeData($model, $config);
         $this->assertEmpty($data);
     }
@@ -104,7 +104,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
     {
         $this->params = [
             'activityNotice' => [
-                'testModel02' => [
+                'TestModel02' => [
                     'notifyActions' => [//Use '*' to indicate all actions will be applied
                         'delete' => ['serializeAttributes' => 'id'],
                         'add',//Use simple string value to indicate all attributes will be applied
@@ -123,7 +123,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $model->model1->field1 = "ABC";
         $model->model1->field2 = "XYZ";
 
-        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+        $config = $helper->getActivityNoticeConfig('TestModel02', 'update', null);
 
         $data = $helper->getSerializeData($model, $config);
 
@@ -142,7 +142,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
                 '*' => [
                     'notSerializeAttributes' => '_explicitType'
                 ],
-                'testModel01' => [
+                'TestModel01' => [
                     'notifyActions' => '*',
                     'serializeAttributes' => 'field1,field2'
                 ],
@@ -157,7 +157,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
             '_explicitType' => "TestModel01"
         ];
 
-        $config = $helper->getActivityNoticeConfig('testModel01', 'add', null);
+        $config = $helper->getActivityNoticeConfig('TestModel01', 'add', null);
         $data = $helper->getSerializeData($model, $config);
 
         $this->assertArrayNotHasKey('_explicitType',$data);
@@ -174,7 +174,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
                 '*' => [
                     'notSerializeAttributes' => '_explicitType'
                 ],
-                'testModel01' => [
+                'TestModel01' => [
                     'notifyActions' => [
                         'add'=>[
                             'notSerializeAttributes'=>'field3'
@@ -192,7 +192,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
             '_explicitType' => "TestModel01"
         ];
 
-        $config = $helper->getActivityNoticeConfig('testModel01', 'add', null);
+        $config = $helper->getActivityNoticeConfig('TestModel01', 'add', null);
         $data = $helper->getSerializeData($model, $config);
 
         $this->assertArrayHasKey('_explicitType',$data);
@@ -208,7 +208,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
     {
         $this->params = [
             'activityNotice' => [
-                'testModel02' => [
+                'TestModel02' => [
                     'notifyActions' => '*',
                     'serializeAttributes' => 'code,jsonData,model1.field1,model1.field3,workCalendar,resources,projectTasks'
                 ],
@@ -223,7 +223,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $model->model1->field3 = "GHI";
         $model->code = null;
 
-        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+        $config = $helper->getActivityNoticeConfig('TestModel02', 'update', null);
 
         $data = $helper->getSerializeData($model, $config);
 
@@ -244,7 +244,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
                 '*' => [
                     'notSerializeAttributes' => '_explicitType'
                 ],
-                'testModel01' => [
+                'TestModel01' => [
                     'notifyActions' => [
                         'add,update,batchSave'=>[
                             'notSerializeAttributes'=>'field3,field2'
@@ -259,7 +259,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $actions = ['add','update','batchSave'];
         foreach($actions as $action)
         {
-            $config = $helper->getActivityNoticeConfig('testModel01', $action, null);
+            $config = $helper->getActivityNoticeConfig('TestModel01', $action, null);
 
             $this->assertNotEmpty($config);
 

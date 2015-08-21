@@ -12,7 +12,7 @@ class JsonHelperTest extends PHPUnit_Framework_TestCase
     {
         $this->params = [
             'activityNotice' => [
-                'testModel02' => [
+                'TestModel02' => [
                     'notifyActions' => '*',
                     'serializeAttributes' => 'jsonData,model1.field1,model1.field3,workCalendar,resources,projectTasks'
                 ],
@@ -27,7 +27,7 @@ class JsonHelperTest extends PHPUnit_Framework_TestCase
         $model->model1->field3 = "GHI";
         $model->projectTasks = ['abc','def'];
 
-        $config = $helper->getActivityNoticeConfig('testModel02', 'update', null);
+        $config = $helper->getActivityNoticeConfig('TestModel02', 'update', null);
         $data = $helper->getSerializeData($model, $config);
 
         $json = JsonHelper::encode($data);
