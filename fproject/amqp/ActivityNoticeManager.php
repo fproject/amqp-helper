@@ -80,8 +80,10 @@ class ActivityNoticeManager {
         if(!isset($config))
             return;
 
+        $a=explode('\\', $classId);
+        $shortClassId = array_pop($a);
         $notice = new ActivityNotice([
-            'kind'=>$classId.'AUD',
+            'kind'=>lcfirst($shortClassId).'AUD',
             'dispatchTime'=>date(DATE_ISO8601, time()),
             'dispatcher'=>$this->getDispatcher(),
             'contentUpdatedFields'=>$attributeNames
