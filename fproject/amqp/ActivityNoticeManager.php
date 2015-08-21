@@ -55,6 +55,16 @@ class ActivityNoticeManager {
     }
 
     /**
+     * Get the data serializer instance
+     *
+     * @return ActivityNoticeSerializer
+     * */
+    public function getSerializer()
+    {
+        return new ActivityNoticeSerializer($this->params);
+    }
+
+    /**
      * This method is invoked after saving a record successfully.
      * The default implementation does nothing.
      * You may override this method to do postprocessing after record saving.
@@ -73,9 +83,9 @@ class ActivityNoticeManager {
 
         $noticeAction = ($action === 'delete' && isset($modelList1)) ? 'batchDelete' : $action;
 
-        $helper = new ActivityNoticeSerializer($this->params);
+        $serializer = $this->getSerializer();
 
-        $config = $helper->getActivityNoticeConfig($classId, $noticeAction, $attributeNames);
+        $config = $serializer->getActivityNoticeConfig($classId, $noticeAction, $attributeNames);
 
         if(!isset($config))
             return;
@@ -94,13 +104,13 @@ class ActivityNoticeManager {
             if(count($modelList1) > 0)
             {
                 $notice->action = 'add';
-                $notice->content = $helper->getSerializeListData($modelList1, $config);
+                $notice->content = $serializer->getSerializeListData($modelList1, $config);
                 $this->sendActivityNotice($notice);
             }
             if(count($modelList2) > 0)
             {
                 $notice->action = 'update';
-                $notice->content = $helper->getSerializeListData($modelList2, $config);
+                $notice->content = $serializer->getSerializeListData($modelList2, $config);
                 $this->sendActivityNotice($notice);
             }
         }
@@ -108,9 +118,9 @@ class ActivityNoticeManager {
         {
             $notice->action = $action;
             if($action==='delete' && isset($modelList1))
-                $notice->content = $helper->getSerializeListData($modelList1, $config);
+                $notice->content = $serializer->getSerializeListData($modelList1, $config);
             else
-                $notice->content = $helper->getSerializeData($model, $config);
+                $notice->content = $serializer->getSerializeData($model, $config);
             $this->sendActivityNotice($notice);
         }
     }

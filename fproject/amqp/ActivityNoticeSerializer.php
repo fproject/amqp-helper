@@ -335,14 +335,16 @@ class ActivityNoticeSerializer {
             {
                 if(is_object($data))
                 {
-                    $reflection = new ReflectionClass($data);
-                    $public = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
-                    $static = $reflection->getProperties(ReflectionProperty::IS_STATIC);
-                    $properties = array_diff($public, $static);
-                    /** @var ReflectionProperty $prop */
-                    foreach($properties as $prop)
+                    if(isset($this->getSerializableAttributesFunction))
+                        $properties = call_user_func($this->getSerializableAttributesFunction, $this, $data);
+                    else
+                        $properties = $this->getSerializableAttributes($data);
+                    foreach($properties as $key=>$prop)
                     {
-                        $att = $prop->name;
+                        if($prop instanceof ReflectionProperty)
+                            $att = $prop->name;
+                        else
+                            $att = $key;
                         if(!in_array($att, $notSerializeAttributes))
                             $serializeData[$att] = $data->{$att};
                         else
@@ -367,23 +369,24 @@ class ActivityNoticeSerializer {
     }
 
     /**
-     * Recursively get an associative array of class properties by property name => ReflectionProperty() object
-     * including inherited ones from extended classes
+     * @var callable a PHP callable that will be called to get an associative array of ReflectionProperty objects
+     * for serializable attributes of the data object
+     * @param string $classOrInstance Class name or an instance of the class
+     * @return ReflectionProperty[]
+     */
+    public $getSerializableAttributesFunction;
+
+    /**
+     * Get an array of ReflectionProperty objects represents the serializable attributes of given class or instance
      * @param string $classOrInstance Class name or an instance of the class
      * @return array
      */
-    private function getClassPublicProperties($classOrInstance){
+    public function getSerializableAttributes($classOrInstance)
+    {
         $reflection = new ReflectionClass($classOrInstance);
         $public = $reflection->getProperties(ReflectionProperty::IS_PUBLIC);
         $static = $reflection->getProperties(ReflectionProperty::IS_STATIC);
-        $properties = array_diff($public, $static);
-
-        if($parentClass = $reflection->getParentClass()){
-            $parentProps = $this->getClassPublicProperties($parentClass->getName());//RECURSION
-            if(count($parentProps) > 0)
-                $properties = array_merge($parentProps, $properties);
-        }
-        return $properties;
+        return array_diff($public, $static);
     }
 
     /**
