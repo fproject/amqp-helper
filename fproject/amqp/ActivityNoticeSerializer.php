@@ -86,7 +86,7 @@ class ActivityNoticeSerializer {
                 if(is_string($includeAttributes))
                     $includeAttributes = explode(',', $includeAttributes);
             }
-            if(array_key_exists('listenAttributes', $actionConfig))
+            if(array_key_exists('notListenAttributes', $actionConfig))
             {
                 $excludeAttributes = $actionConfig['notListenAttributes'];
                 if(is_string($excludeAttributes))
