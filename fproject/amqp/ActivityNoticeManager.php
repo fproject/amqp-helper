@@ -69,7 +69,7 @@ class ActivityNoticeManager {
      */
     public function noticeAfterModelAction($model, $configType, $action, $attributeNames=null, $modelList1=null, $modelList2=null)
     {
-        $classId = lcfirst(get_class($configType));
+        $classId = get_class($configType);
 
         $noticeAction = ($action === 'delete' && isset($modelList1)) ? 'batchDelete' : $action;
 
