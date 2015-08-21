@@ -2,6 +2,7 @@
 use fproject\amqp\ActivityNoticeSerializer;
 include_once('TestModel01.php');
 include_once('TestModel02.php');
+include_once('TestModel03.php');
 class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
 {
     private $params = [];
@@ -270,6 +271,45 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
             $this->assertEquals('field2',$config['notSerializeAttributes'][1]);
             $this->assertEquals('_explicitType',$config['notSerializeAttributes'][2]);
         }
+    }
+
+    public function testGetSerializeData08()
+    {
+        $this->params = [
+            'activityNotice' => [
+                'TestModel03' => [
+                    'notifyActions' => '*',
+                    'notSerializeAttributes' => '_explicitType'
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializer($this->params);
+        $model = new TestModel03();
+        $model->field1 = "ABC";
+        $model->field2 = "XYZ";
+        $model->field3 = "GHI";
+        $model->myField1 = "My1";
+        $model->myField2 = "My2";
+        $model->_explicitType = "TestModel03";
+
+        $config = $helper->getActivityNoticeConfig('TestModel03', 'save', null);
+
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayHasKey('field1',$data);
+        $this->assertEquals('ABC',$data['field1']);
+        $this->assertArrayHasKey('field2',$data);
+        $this->assertEquals('XYZ',$data['field2']);
+        $this->assertArrayHasKey('field3',$data);
+        $this->assertEquals('GHI',$data['field3']);
+
+        $this->assertArrayHasKey('myField1',$data);
+        $this->assertEquals('My1',$data['myField1']);
+        $this->assertArrayHasKey('myField2',$data);
+        $this->assertEquals('My2',$data['myField2']);
+
+        $this->assertNull($data['_explicitType']);
     }
 }
 ?>
