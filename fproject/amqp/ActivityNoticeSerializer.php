@@ -259,6 +259,8 @@ class ActivityNoticeSerializer {
     {
         if(is_null($config) || !is_array($config))
             return null;
+        elseif(is_string($data))
+            return $data;
 
         if(isset($config['serializeAttributes']))
             $serializeAttributes = $config['serializeAttributes'];

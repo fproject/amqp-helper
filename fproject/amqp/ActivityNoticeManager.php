@@ -69,17 +69,20 @@ class ActivityNoticeManager {
      * The default implementation does nothing.
      * You may override this method to do postprocessing after record saving.
      *
-     * @param mixed $model The model
-     * @param mixed $configType the instance of class that is configured in 'config/activityNotice.php'
+     * @param mixed $data The model or action's data
+     * @param mixed $configType the class name or instance of class that is configured in 'config/activityNotice.php'
      * @param string $action the action, the possible values: "add", "update", "batch"
      * @param mixed $attributeNames the attributes
-     * @param array $modelList1 if $action is "batch", this will be the inserted models, if action is "delete" and
+     * @param array $modelList1 if $action is "batchSave", this will be the inserted models, if action is "batchDelete" and
      * there's multiple deletion executed, this will be the deleted models
-     * @param array $modelList2 if $action is "batch", this will be the updated models, if action is "delete", this parameter is ignored.
+     * @param array $modelList2 if $action is "batchSave", this will be the updated models, if action is "batchDelete", this parameter is ignored.
      */
-    public function noticeAfterModelAction($model, $configType, $action, $attributeNames=null, $modelList1=null, $modelList2=null)
+    public function noticeAfterModelAction($data, $configType, $action, $attributeNames=null, $modelList1=null, $modelList2=null)
     {
-        $classId = get_class($configType);
+        if(is_object($configType))
+            $classId = get_class($configType);
+        else
+            $classId = $configType;
 
         $noticeAction = ($action === 'delete' && isset($modelList1)) ? 'batchDelete' : $action;
 
@@ -116,11 +119,16 @@ class ActivityNoticeManager {
         }
         else
         {
-            $notice->action = $action;
-            if($action==='delete' && isset($modelList1))
-                $notice->content = $serializer->getSerializeListData($modelList1, $config);
+            $notice->action = $noticeAction;
+            if($noticeAction==='batchDelete')
+            {
+                if(isset($modelList1))
+                    $notice->content = $serializer->getSerializeListData($modelList1, $config);
+                else
+                    $notice->content = $data;
+            }
             else
-                $notice->content = $serializer->getSerializeData($model, $config);
+                $notice->content = $serializer->getSerializeData($data, $config);
             $this->sendActivityNotice($notice);
         }
     }
