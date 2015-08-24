@@ -11,4 +11,4 @@ install:
   - composer info --installed
 before_script:
   - mysql -e 'create database amqp_helper_test;'
-script: phpunit
+script: phpunit -c phpunit.xml
