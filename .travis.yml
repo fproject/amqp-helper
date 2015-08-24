@@ -9,8 +9,5 @@ install:
   - composer install --prefer-dist --dev
   - composer info --installed
 before_script:
-  - mysql -e 'create database workflowii_test;'
-  - cd tests  
-  - php ./codeception/bin/yii  migrate/up --interactive=0
-  - ../vendor/bin/codecept build
-script: ../vendor/bin/codecept run unit 
+  - mysql -e 'create database amqp_helper_test;'
+script: phpunit --configuration phpunit.xml --coverage-text
