@@ -41,15 +41,23 @@ class ActivityNoticeManager {
             return false;
         /** @var array $setting */
         $setting = $this->params['amqpSetting'];
-        $connection = new AMQPStreamConnection($setting['host'], $setting['port'], $setting['user'], $setting['password']);
-        $channel = $connection->channel();
 
-        $msg = new AMQPMessage(JsonHelper::encode($notice));
+        try
+        {
+            $connection = new AMQPStreamConnection($setting['host'], $setting['port'], $setting['user'], $setting['password']);
+            $channel = $connection->channel();
 
-        $channel->basic_publish($msg, $setting['exchangeName'], $setting['routingKey']);
+            $msg = new AMQPMessage(JsonHelper::encode($notice));
 
-        $channel->close();
-        $connection->close();
+            $channel->basic_publish($msg, $setting['exchangeName'], $setting['routingKey']);
+
+            $channel->close();
+            $connection->close();
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
 
         return true;
     }
