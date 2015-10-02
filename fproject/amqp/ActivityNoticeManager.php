@@ -93,7 +93,7 @@ class ActivityNoticeManager {
         else
             $classId = $configType;
 
-        $noticeAction = ($action === 'delete' && isset($modelList1)) ? 'batchDelete' : $action;
+        $noticeAction = ($action === 'delete' && is_array($modelList1)) ? 'batchDelete' : $action;
 
         $serializer = $this->getSerializer();
 
