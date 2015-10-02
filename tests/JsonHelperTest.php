@@ -1,7 +1,6 @@
 <?php
 use fproject\amqp\ActivityNoticeSerializer;
-use fproject\amqp\JsonHelper;
-
+use fproject\common\utils\JsonHelper;
 include_once('TestModel01.php');
 include_once('TestModel02.php');
 class JsonHelperTest extends PHPUnit_Framework_TestCase

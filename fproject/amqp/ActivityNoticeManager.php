@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace fproject\amqp;
 
+use fproject\common\utils\JsonHelper;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
