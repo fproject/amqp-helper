@@ -18,6 +18,8 @@ use PhpAmqpLib\Message\AMQPMessage;
  * @author Bui Sy Nguyen <nguyenbs@gmail.com>
  */
 class ActivityNoticeManager {
+    public $amqpClientLibrary = "PhpAmqpLib";//use "PECL" for RabbitMQ-C client extension
+
     /** @var  array $params The parameters array contains configuration of AMQP and activity notice settings */
     public $params;
 
@@ -45,15 +47,40 @@ class ActivityNoticeManager {
 
         try
         {
-            $connection = new AMQPStreamConnection($setting['host'], $setting['port'], $setting['user'], $setting['password']);
-            $channel = $connection->channel();
+            if($this->amqpClientLibrary == "PhpAmqpLib")
+            {
+                $connection = new AMQPStreamConnection($setting['host'], $setting['port'], $setting['user'], $setting['password']);
+                $channel = $connection->channel();
 
-            $msg = new AMQPMessage(JsonHelper::encode($notice));
+                $msg = new AMQPMessage(JsonHelper::encode($notice));
 
-            $channel->basic_publish($msg, $setting['exchangeName'], $setting['routingKey']);
+                $channel->basic_publish($msg, $setting['exchangeName'], $setting['routingKey']);
 
-            $channel->close();
-            $connection->close();
+                $channel->close();
+                $connection->close();
+            }
+            elseif($this->amqpClientLibrary == "PECL")
+            {
+                $connection = new \AMQPConnection([
+                    'host' => $setting['host'],
+                    'port' => $setting['port'],
+                    'login' => $setting['user'],
+                    'password' => $setting['password']
+                ]);
+                $connection->connect();
+                if($connection->isConnected())
+                {
+                    $channel = new \AMQPChannel($connection);
+                    $exchange = new \AMQPExchange($channel);
+                    $exchange->setName($setting['exchangeName']);
+                    $exchange->publish(JsonHelper::encode($notice), $setting['routingKey']);
+                    $connection->disconnect();
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
         catch (\Exception $e)
         {
