@@ -35,7 +35,7 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('field3',$data);
         $this->assertArrayHasKey('field2',$data);
         $this->assertArrayHasKey('field1',$data);
-        $this->assertInstanceOf('DateTime',$data['field1']);
+        $this->assertEquals($model->field1->format(DATE_ISO8601),$data['field1']);
     }
 
     public function testGetSerializeData02()
@@ -165,7 +165,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('field3',$data);
         $this->assertArrayHasKey('field2',$data);
         $this->assertArrayHasKey('field1',$data);
-        $this->assertInstanceOf('DateTime',$data['field1']);
+        /** @var DateTime $tmpDate */
+        $tmpDate = $model['field1'];
+        $this->assertEquals($tmpDate->format(DATE_ISO8601),$data['field1']);
     }
 
     public function testGetSerializeData06()
