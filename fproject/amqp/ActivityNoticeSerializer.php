@@ -325,6 +325,11 @@ class ActivityNoticeSerializer {
                             {
                                 $sd[$att] = $dt[$att];
                             }
+                            if($sd[$att] instanceof \DateTime) {
+                                /** @var \DateTime $date */
+                                $date = $sd[$att];
+                                $sd[$att] = $date->format(DATE_ISO8601);
+                            }
                         }
                     }
                     else
