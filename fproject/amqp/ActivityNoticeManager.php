@@ -122,6 +122,7 @@ class ActivityNoticeManager {
      * @param array $modelList1 if $action is "batchSave", this will be the inserted models, if action is "batchDelete" and
      * there's multiple deletion executed, this will be the deleted models
      * @param array $modelList2 if $action is "batchSave", this will be the updated models, if action is "batchDelete", this parameter is ignored.
+     * @return ActivityNotice The activity notice data that sent to AMQP Server
      */
     public function noticeAfterModelAction($data, $configType, $action, $attributeNames=null, $modelList1=null, $modelList2=null)
     {
@@ -173,9 +174,17 @@ class ActivityNoticeManager {
                 else
                     $notice->content = $data;
             }
+            elseif($noticeAction==='delete' && !empty($modelList1) && !is_array($modelList1))
+            {
+                $notice->content = $serializer->getSerializeData($modelList1, $config);
+            }
             else
+            {
                 $notice->content = $serializer->getSerializeData($data, $config);
+            }
             $this->sendActivityNotice($notice);
         }
+
+        return $notice;
     }
 }

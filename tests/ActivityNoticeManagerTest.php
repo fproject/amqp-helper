@@ -24,9 +24,34 @@ class ActivityNoticeManagerTest extends PHPUnit_Framework_TestCase
 {
     private $params = [];
 
-    public function testSendActivityNotice01()
+    public function testNoticeAfterModelActionForDeletingByPK()
     {
-        $this->assertTrue(true);
+        $anm = new \fproject\amqp\ActivityNoticeManager();
+        $anm->params =  [
+            'activityNotice' => [
+                'TestModel03' => [
+                    'notifyActions' => '*',
+                    'notSerializeAttributes' => '_explicitType'
+                ],
+            ],
+            'amqpSetting' =>
+                [
+                    'host' => 'so.projectkit.net',
+                    'port' => '5672',
+                    'user' => 'pkadmin',
+                    'password' => 'pkrb@12345',
+                    'exchangeName' => 'pk-main.notices',
+                    'routingKey' => 'rk.activity-notices'
+                ],
+        ];
+
+       /* $helper = new ActivityNoticeSerializer($this->params);
+        $config = $helper->getActivityNoticeConfig('TestModel03', 'delete', null, '1001');*/
+
+        $notice = $anm->noticeAfterModelAction(new TestModel03(), 'TestModel03', 'delete', null, '1001');
+
+        $this->assertEquals('1001', $notice->content);
     }
+
 }
 ?>
