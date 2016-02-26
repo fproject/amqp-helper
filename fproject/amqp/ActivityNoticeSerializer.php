@@ -75,6 +75,10 @@ class ActivityNoticeSerializer {
         $actionConfig = $this->getActionConfig($classId,$config, $action);
 
         $attributeConfig = $this->getAttributeConfig($actionConfig, $actionAttributes);
+
+        if(isset($actionConfig['serializeDelegateFunction']))
+            $attributeConfig['serializeDelegateFunction'] = $actionConfig['serializeDelegateFunction'];
+
         if(isset($attributeConfig))
             $this->_configCache[$cacheKey] = $attributeConfig;
 
@@ -193,22 +197,29 @@ class ActivityNoticeSerializer {
                 }
             }
 
-            $actionConfig = $this->mergeConfig($config, 'serializeAttributes', $actionConfig);
-            $actionConfig = $this->mergeConfig($config, 'notSerializeAttributes', $actionConfig);
-            $actionConfig = $this->mergeConfig($config, 'listenAttributes', $actionConfig);
-            $actionConfig = $this->mergeConfig($config, 'notListenAttributes', $actionConfig);
+            $actionConfig = $this->parseAndMergeConfigs($config, $actionConfig);
         }
 
         if(isset($configRoot['*']))
         {
             $globalConfig = $configRoot['*'];
-            $actionConfig = $this->mergeConfig($globalConfig, 'serializeAttributes', $actionConfig);
-            $actionConfig = $this->mergeConfig($globalConfig, 'notSerializeAttributes', $actionConfig);
-            $actionConfig = $this->mergeConfig($globalConfig, 'listenAttributes', $actionConfig);
-            $actionConfig = $this->mergeConfig($globalConfig, 'notListenAttributes', $actionConfig);
+            $actionConfig = $this->parseAndMergeConfigs($globalConfig, $actionConfig);
         }
 
         return $actionConfig;
+    }
+
+    private function parseAndMergeConfigs($config1, $config2)
+    {
+        if(isset($config1['serializeDelegateFunction']))
+            $config2['serializeDelegateFunction'] = $config1['serializeDelegateFunction'];
+
+        $config2 = $this->mergeConfig($config1, 'serializeAttributes', $config2);
+        $config2 = $this->mergeConfig($config1, 'notSerializeAttributes', $config2);
+        $config2 = $this->mergeConfig($config1, 'listenAttributes', $config2);
+        $config2 = $this->mergeConfig($config1, 'notListenAttributes', $config2);
+
+        return $config2;
     }
 
     private function mergeConfig($globalConfig, $attSet, $cfg)
@@ -268,9 +279,26 @@ class ActivityNoticeSerializer {
     public function getSerializeData($data, $config)
     {
         if(is_null($config) || !is_array($config))
+        {
             return null;
+        }
+        elseif(isset($config['serializeDelegateFunction']))
+        {
+            $delegate = $config['serializeDelegateFunction'];
+            if(is_string($delegate))
+            {
+                if(is_object($data) && method_exists($data, $delegate))
+                {
+                    return (array) call_user_func([$data, $delegate], $config);
+                }
+                return null;
+            }
+            return (array) call_user_func($delegate, $data, $config);
+        }
         elseif(is_string($data))
+        {
             return $data;
+        }
 
         if(isset($config['serializeAttributes']))
             $serializeAttributes = $config['serializeAttributes'];
