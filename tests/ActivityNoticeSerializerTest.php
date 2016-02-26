@@ -1,7 +1,7 @@
 <?php
 ///////////////////////////////////////////////////////////////////////////////
 //
-// © Copyright f-project.net 2010-present.
+// ï¿½ Copyright f-project.net 2010-present.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -329,6 +329,92 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('My2',$data['myField2']);
 
         $this->assertNull($data['_explicitType']);
+    }
+
+    public function testGetSerializeData09_serializeDelegateFunction1()
+    {
+        $this->params = [
+            'activityNotice' => [
+                'TestModel03' => [
+                    'notifyActions' => '*',
+                    'notSerializeAttributes' => '_explicitType',
+                    'serializeDelegateFunction' => function($data, $config)
+                        {
+                            $data->field1 = "@@@";
+                            return $data;
+                        }
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializer($this->params);
+        $model = new TestModel03();
+        $model->field1 = "ABC";
+        $model->field2 = "XYZ";
+        $model->field3 = "GHI";
+        $model->myField1 = "My1";
+        $model->myField2 = "My2";
+        $model->_explicitType = "TestModel03";
+
+        $config = $helper->getActivityNoticeConfig('TestModel03', 'save', null);
+
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayHasKey('field1',$data);
+        $this->assertEquals('@@@',$data['field1']);
+        $this->assertArrayHasKey('field2',$data);
+        $this->assertEquals('XYZ',$data['field2']);
+        $this->assertArrayHasKey('field3',$data);
+        $this->assertEquals('GHI',$data['field3']);
+
+        $this->assertArrayHasKey('myField1',$data);
+        $this->assertEquals('My1',$data['myField1']);
+        $this->assertArrayHasKey('myField2',$data);
+        $this->assertEquals('My2',$data['myField2']);
+
+        $this->assertArrayHasKey('_explicitType',$data);
+        $this->assertEquals('TestModel03',$data['_explicitType']);
+    }
+
+    public function testGetSerializeData10_serializeDelegateFunction2()
+    {
+        $this->params = [
+            'activityNotice' => [
+                'TestModel03' => [
+                    'notifyActions' => '*',
+                    'notSerializeAttributes' => '_explicitType',
+                    'serializeDelegateFunction' => 'mySerializeDelegateFunction'
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializer($this->params);
+        $model = new TestModel03();
+        $model->field1 = "ABC";
+        $model->field2 = "XYZ";
+        $model->field3 = "GHI";
+        $model->myField1 = "My1";
+        $model->myField2 = "My2";
+        $model->_explicitType = "TestModel03";
+
+        $config = $helper->getActivityNoticeConfig('TestModel03', 'save', null);
+
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayHasKey('field1',$data);
+        $this->assertEquals('@@@',$data['field1']);
+        $this->assertArrayHasKey('field2',$data);
+        $this->assertEquals('XYZ',$data['field2']);
+        $this->assertArrayHasKey('field3',$data);
+        $this->assertEquals('GHI',$data['field3']);
+
+        $this->assertArrayHasKey('myField1',$data);
+        $this->assertEquals('My1',$data['myField1']);
+        $this->assertArrayHasKey('myField2',$data);
+        $this->assertEquals('My2',$data['myField2']);
+
+        $this->assertArrayHasKey('_explicitType',$data);
+        $this->assertEquals('TestModel03',$data['_explicitType']);
     }
 }
 ?>
