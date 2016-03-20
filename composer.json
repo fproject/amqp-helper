@@ -17,7 +17,7 @@
     },
     "require": {
       "php": ">=5.4.0",
-      "videlalvaro/php-amqplib": "*",
+      "php-amqplib/php-amqplib": "*",
       "fproject/php-common": "*"
     },
 
