@@ -18,6 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace fproject\amqp;
 
+use fproject\common\utils\DateTimeHelper;
 use fproject\common\utils\JsonHelper;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -122,7 +123,7 @@ class ActivityNoticeManager {
      * @param array $modelList1 if $action is "batchSave", this will be the inserted models, if action is "batchDelete" and
      * there's multiple deletion executed, this will be the deleted models
      * @param array $modelList2 if $action is "batchSave", this will be the updated models, if action is "batchDelete", this parameter is ignored.
-     * @return ActivityNotice The activity notice data that sent to AMQP Server
+     * @return ActivityNotice The activity notice data that sent to AMQP Server. If the notification action is failed, FALSE will be returned.
      */
     public function noticeAfterModelAction($data, $configType, $action, $attributeNames=null, $modelList1=null, $modelList2=null)
     {
@@ -138,13 +139,13 @@ class ActivityNoticeManager {
         $config = $serializer->getActivityNoticeConfig($classId, $noticeAction, $attributeNames);
 
         if(!isset($config))
-            return;
+            return false;
 
         $a=explode('\\', $classId);
         $shortClassId = array_pop($a);
         $notice = new ActivityNotice([
             'kind'=>lcfirst($shortClassId).'AUD',
-            'dispatchTime'=>date(DATE_ISO8601, time()),
+            'dispatchTime'=>DateTimeHelper::currentDateTime(),
             'dispatcher'=>$this->getDispatcher(),
             'contentUpdatedFields'=>$attributeNames
         ]);

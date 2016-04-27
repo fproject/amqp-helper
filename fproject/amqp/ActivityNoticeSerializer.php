@@ -17,6 +17,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 namespace fproject\amqp;
+use fproject\common\utils\DateTimeHelper;
 use ReflectionClass;
 use ReflectionProperty;
 use Exception;
@@ -366,7 +367,7 @@ class ActivityNoticeSerializer {
                             if($sd[$att] instanceof \DateTime) {
                                 /** @var \DateTime $date */
                                 $date = $sd[$att];
-                                $sd[$att] = $date->format(DATE_ISO8601);
+                                $sd[$att] = DateTimeHelper::toISO8601UTC($date);
                             }
                         }
                     }
