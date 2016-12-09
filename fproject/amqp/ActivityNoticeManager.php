@@ -123,9 +123,11 @@ class ActivityNoticeManager {
      * @param array $modelList1 if $action is "batchSave", this will be the inserted models, if action is "batchDelete" and
      * there's multiple deletion executed, this will be the deleted models
      * @param array $modelList2 if $action is "batchSave", this will be the updated models, if action is "batchDelete", this parameter is ignored.
-     * @return ActivityNotice The activity notice data that sent to AMQP Server. If the notification action is failed, FALSE will be returned.
+     * @param array $modelList3 if $action is "update" or "batchUpdate", this will be the old data before update, if action is "batchDelete", this parameter is ignored.
+     * @return ActivityNotice|bool The activity notice data that sent to AMQP Server. If the notification action is failed, FALSE will be returned.
      */
-    public function noticeAfterModelAction($data, $configType, $action, $attributeNames=null, $modelList1=null, $modelList2=null)
+    public function noticeAfterModelAction($data, $configType, $action, $attributeNames=null,
+                                           $modelList1=null, $modelList2=null, $modelList3=null)
     {
         if(is_object($configType))
             $classId = get_class($configType);
@@ -150,17 +152,22 @@ class ActivityNoticeManager {
             'contentUpdatedFields'=>$attributeNames
         ]);
 
+        if(array_key_exists('serializeOldData', $config) && $config['serializeOldData'] && !is_null($modelList3)) {
+            $notice->oldContent = is_array($modelList3) ? $serializer->getSerializeListData($modelList3, $config) :
+                $serializer->getSerializeData($modelList3, $config);
+        }
+
         if($action==='batchSave')
         {
             if(count($modelList1) > 0)
             {
-                $notice->action = 'add';
+                $notice->action = 'batchAdd';
                 $notice->content = $serializer->getSerializeListData($modelList1, $config);
                 $this->sendActivityNotice($notice);
             }
             if(count($modelList2) > 0)
             {
-                $notice->action = 'update';
+                $notice->action = 'batchUpdate';
                 $notice->content = $serializer->getSerializeListData($modelList2, $config);
                 $this->sendActivityNotice($notice);
             }
