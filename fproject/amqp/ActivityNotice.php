@@ -43,6 +43,9 @@ class ActivityNotice {
     /** @var  mixed $content the content of activity */
     public $content;
 
+    /** @var  mixed $oldContent the content of activity */
+    public $oldContent;
+
     /** @var  string[] $contentUpdatedFields the list of updated fields of the content */
     public $contentUpdatedFields;
 
