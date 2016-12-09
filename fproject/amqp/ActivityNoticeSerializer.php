@@ -54,6 +54,8 @@ class ActivityNoticeSerializer {
 
     private $_params;
 
+    private $serializeOldData = false;
+
     /**
      * Return null if activity is not configured for given parameters.
      * @param string $classId
@@ -456,11 +458,15 @@ class ActivityNoticeSerializer {
                 $notSerializeAttributes = explode(',', $notSerializeAttributes);
         }
 
-        $sa = [];
+        $sa = [
+            'serializeOldData' => $this->serializeOldData,
+        ];
         if($serializeAttributes !== null)
             $sa['serializeAttributes'] = $serializeAttributes;
         if($notSerializeAttributes !== null)
             $sa['notSerializeAttributes'] = $notSerializeAttributes;
+        if(array_key_exists('serializeOldData', $actionConfig))
+            $sa['serializeOldData'] = $actionConfig['serializeOldData'];
         return $sa;
     }
 }
