@@ -416,5 +416,93 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('_explicitType',$data);
         $this->assertEquals('TestModel03',$data['_explicitType']);
     }
+
+    public function testGetSerializeData11()
+    {
+        $this->params = [
+            'activityNotice' => [
+                '*' => [
+                    'notSerializeAttributes' => '_explicitType'
+                ],
+                'TestModel02' => [
+                    'notifyActions' => [//Use '*' to indicate all actions will be applied
+                        'delete' => ['serializeAttributes' => 'id'],
+                        'add',//Use simple string value to indicate all attributes will be applied
+                        'update' => [
+                            //'listenAttributes' => '*',
+                            'notListenAttributes' => 'jsonData',
+                            //'serializeAttributes' => '*',
+                            'notSerializeAttributes' => 'jsonData,model1,workCalendar,resources,projectTasks',
+                            'serializeOldData' => true
+                        ]
+                    ]
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializer($this->params);
+        $model = new TestModel02();
+        $model->id = '002';
+        $model->endTime = new DateTime();
+        $model->jsonData = '{}';
+        $model->name = 'Name 002';
+        $model->_explicitType = "TestModel02";
+
+        $config = $helper->getActivityNoticeConfig('TestModel02', 'update', null);
+
+        $this->assertArrayHasKey('serializeOldData', $config);
+        $this->assertTrue($config['serializeOldData']);
+
+        $data = $helper->getSerializeData($model, $config);
+
+        $this->assertArrayHasKey('jsonData',$data);
+        $this->assertNull($data['jsonData']);
+        $this->assertArrayHasKey('_explicitType',$data);
+        $this->assertNull($data['_explicitType']);
+        $this->assertArrayHasKey('model1',$data);
+        $this->assertNull($data['model1']);
+        $this->assertArrayHasKey('id',$data);
+        $this->assertArrayHasKey('endTime',$data);
+        $this->assertInstanceOf('DateTime',$data['endTime']);
+    }
+
+    public function testGetActivityNoticeConfig12()
+    {
+        $this->params = [
+            'activityNotice' => [
+                '*' => [
+                    'notSerializeAttributes' => '_explicitType'
+                ],
+                'TestModel01' => [
+                    'notifyActions' => [
+                        'add,update,batchSave'=>[
+                            'notSerializeAttributes'=>'field3,field2',
+                            'serializeOldData' => true,
+                        ]
+                    ]
+                ],
+            ]
+        ];
+
+        $helper = new ActivityNoticeSerializer($this->params);
+
+        $actions = ['add','update','batchSave'];
+        foreach($actions as $action)
+        {
+            $config = $helper->getActivityNoticeConfig('TestModel01', $action, null);
+
+            $this->assertNotEmpty($config);
+
+            $this->assertArrayHasKey('serializeOldData', $config);
+            $this->assertTrue($config['serializeOldData']);
+
+            $this->assertArrayHasKey('notSerializeAttributes',$config);
+            $this->assertTrue(is_array($config['notSerializeAttributes']));
+            $this->assertCount(3, $config['notSerializeAttributes']);
+            $this->assertEquals('field3',$config['notSerializeAttributes'][0]);
+            $this->assertEquals('field2',$config['notSerializeAttributes'][1]);
+            $this->assertEquals('_explicitType',$config['notSerializeAttributes'][2]);
+        }
+    }
 }
 ?>

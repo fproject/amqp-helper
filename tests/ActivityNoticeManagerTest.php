@@ -16,7 +16,6 @@
 // limitations under the License.
 //
 ///////////////////////////////////////////////////////////////////////////////
-use fproject\amqp\ActivityNoticeSerializer;
 include_once('TestModel01.php');
 include_once('TestModel02.php');
 include_once('TestModel03.php');
@@ -51,6 +50,40 @@ class ActivityNoticeManagerTest extends PHPUnit_Framework_TestCase
         $notice = $anm->noticeAfterModelAction(new TestModel03(), 'TestModel03', 'delete', null, '1001');
 
         $this->assertEquals('1001', $notice->content);
+    }
+
+    public function testNoticeAfterModelActionIncludeOldData()
+    {
+        $anm = new \fproject\amqp\ActivityNoticeManager();
+        $anm->params =  [
+            'activityNotice' => [
+                'TestModel03' => [
+                    'notifyActions' => [
+                        'add,update,delete' => [
+                            'serializeOldData' => true,
+                        ]
+                    ],
+                    'notSerializeAttributes' => '_explicitType',
+                ],
+            ],
+            'amqpSetting' =>
+                [
+                    'host' => 'so.projectkit.net',
+                    'port' => '5672',
+                    'user' => 'pkadmin',
+                    'password' => 'pkrb@12345',
+                    'exchangeName' => 'pk-main.notices',
+                    'routingKey' => 'rk.activity-notices'
+                ],
+        ];
+
+        /* $helper = new ActivityNoticeSerializer($this->params);
+         $config = $helper->getActivityNoticeConfig('TestModel03', 'delete', null, '1001');*/
+
+        $notice = $anm->noticeAfterModelAction(new TestModel03(), 'TestModel03', 'delete', null, '1001', null, '1000');
+
+        $this->assertEquals('1001', $notice->content);
+        $this->assertEquals('1000', $notice->oldContent);
     }
 
 }
