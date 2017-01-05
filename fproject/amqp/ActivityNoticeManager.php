@@ -134,11 +134,9 @@ class ActivityNoticeManager {
         else
             $classId = $configType;
 
-        $noticeAction = ($action === 'delete' && is_array($modelList1)) ? 'batchDelete' : $action;
-
         $serializer = $this->getSerializer();
 
-        $config = $serializer->getActivityNoticeConfig($classId, $noticeAction, $attributeNames);
+        $config = $serializer->getActivityNoticeConfig($classId, $action, $attributeNames);
 
         if(!isset($config))
             return false;
@@ -174,15 +172,15 @@ class ActivityNoticeManager {
         }
         else
         {
-            $notice->action = $noticeAction;
-            if($noticeAction==='batchDelete')
+            $notice->action = $action;
+            if($action==='batchDelete')
             {
                 if(isset($modelList1))
                     $notice->content = $serializer->getSerializeListData($modelList1, $config);
                 else
                     $notice->content = $data;
             }
-            elseif($noticeAction==='delete' && !empty($modelList1) && !is_array($modelList1))
+            elseif($action==='delete' && !empty($modelList1))
             {
                 $notice->content = $serializer->getSerializeData($modelList1, $config);
             }
