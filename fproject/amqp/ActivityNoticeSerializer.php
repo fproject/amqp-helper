@@ -28,7 +28,7 @@ use Exception;
  * @author Bui Sy Nguyen <nguyenbs@gmail.com>
  */
 class ActivityNoticeSerializer {
-   private $_configCache;
+    private $_configCache;
 
     public function __construct($params)
     {
@@ -81,6 +81,8 @@ class ActivityNoticeSerializer {
 
         if(isset($actionConfig['serializeDelegateFunction']))
             $attributeConfig['serializeDelegateFunction'] = $actionConfig['serializeDelegateFunction'];
+        if(isset($actionConfig['serializeAfterFunction']))
+            $attributeConfig['serializeAfterFunction'] = $actionConfig['serializeAfterFunction'];
 
         if(isset($attributeConfig))
             $this->_configCache[$cacheKey] = $attributeConfig;
@@ -273,14 +275,7 @@ class ActivityNoticeSerializer {
         return $list;
     }
 
-    /**
-     * Get configured serialize data of the original data.
-     * @param $data
-     * @param $config
-     * @return array
-     */
-    public function getSerializeData($data, $config)
-    {
+    public function serializeData($data, $config) {
         if(is_null($config) || !is_array($config))
         {
             return null;
@@ -413,6 +408,31 @@ class ActivityNoticeSerializer {
         }
 
 
+        return $serializeData;
+    }
+
+    /**
+     * Get configured serialize data of the original data.
+     * @param $data
+     * @param $config
+     * @return array
+     */
+    public function getSerializeData($data, $config)
+    {
+        $serializeData = $this->serializeData($data, $config);
+        if(isset($config['serializeAfterFunction']))
+        {
+            $afterFunction = $config['serializeAfterFunction'];
+            if(is_string($afterFunction))
+            {
+                if(is_object($data) && method_exists($data, $afterFunction))
+                {
+                    $serializeData = (array) call_user_func([$data, $afterFunction], $serializeData, $config);
+                }
+            }
+            else
+                $serializeData = (array) call_user_func($afterFunction, $serializeData, $config);
+        }
         return $serializeData;
     }
 

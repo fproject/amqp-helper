@@ -134,9 +134,11 @@ class ActivityNoticeManager {
         else
             $classId = $configType;
 
+        $noticeAction = ($action === 'delete' && is_array($modelList1)) ? 'batchDelete' : $action;
+
         $serializer = $this->getSerializer();
 
-        $config = $serializer->getActivityNoticeConfig($classId, $action, $attributeNames);
+        $config = $serializer->getActivityNoticeConfig($classId, $noticeAction, $attributeNames);
 
         if(!isset($config))
             return false;
@@ -159,28 +161,31 @@ class ActivityNoticeManager {
         {
             if(count($modelList1) > 0)
             {
-                $notice->action = 'batchAdd';
+                //$notice->action = 'batchAdd';
+                $notice->action = 'add';
                 $notice->content = $serializer->getSerializeListData($modelList1, $config);
                 $this->sendActivityNotice($notice);
             }
             if(count($modelList2) > 0)
             {
-                $notice->action = 'batchUpdate';
+                //$notice->action = 'batchUpdate';
+                $notice->action = 'update';
                 $notice->content = $serializer->getSerializeListData($modelList2, $config);
                 $this->sendActivityNotice($notice);
             }
         }
         else
         {
-            $notice->action = $action;
-            if($action==='batchDelete')
+            $notice->action = $noticeAction;
+            if($noticeAction==='batchDelete')
             {
+                $notice->action = 'delete';
                 if(isset($modelList1))
                     $notice->content = $serializer->getSerializeListData($modelList1, $config);
                 else
                     $notice->content = $data;
             }
-            elseif($action==='delete' && !empty($modelList1))
+            elseif($noticeAction==='delete' && !empty($modelList1) && !is_array($modelList1))
             {
                 $notice->content = $serializer->getSerializeData($modelList1, $config);
             }
