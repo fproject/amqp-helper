@@ -1,7 +1,7 @@
 <?php
 ///////////////////////////////////////////////////////////////////////////////
 //
-// © Copyright f-project.net 2010-present.
+// ï¿½ Copyright f-project.net 2010-present.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ use fproject\amqp\ActivityNoticeSerializer;
 use fproject\common\utils\JsonHelper;
 include_once('TestModel01.php');
 include_once('TestModel02.php');
-class JsonHelperTest extends PHPUnit_Framework_TestCase
+class JsonHelperTest extends \PHPUnit\Framework\TestCase
 {
     private $params = [];
 

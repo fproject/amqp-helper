@@ -125,6 +125,7 @@ class ActivityNoticeManager {
      * @param array $modelList2 if $action is "batchSave", this will be the updated models, if action is "batchDelete", this parameter is ignored.
      * @param array $modelList3 if $action is "update" or "batchUpdate", this will be the old data before update, if action is "batchDelete", this parameter is ignored.
      * @return ActivityNotice|bool The activity notice data that sent to AMQP Server. If the notification action is failed, FALSE will be returned.
+     * @throws \Exception
      */
     public function noticeAfterModelAction($data, $configType, $action, $attributeNames=null,
                                            $modelList1=null, $modelList2=null, $modelList3=null)
