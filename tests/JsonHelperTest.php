@@ -24,6 +24,9 @@ class JsonHelperTest extends \PHPUnit\Framework\TestCase
 {
     private $params = [];
 
+    /**
+     * @throws Exception
+     */
     public function testJsonEncodeActivityNotice()
     {
         $this->params = [
