@@ -24,7 +24,8 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 /**
- * ActivityNoticeManager provides a set of methods for sending/receiving message using PhpAmqpLib
+ * ActivityNoticeManager provides a set of methods for sending/receiving message using
+ * PhpAmqpLib or RabbitMQ-C client extension
  *
  * @author Bui Sy Nguyen <nguyenbs@gmail.com>
  */

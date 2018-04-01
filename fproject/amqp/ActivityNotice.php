@@ -19,11 +19,7 @@
 namespace fproject\amqp;
 
 /**
- * This is the abstract base class for all form model classes of this application.
- * It is a customized model based on Yii CFormModel class.
- * All form model classes of this application should extend from this class.
- * @method array getMasterAttributeLabel(mixed $attribute, mixed $type) Get an item data from MasterValue text values,
- * make it available for label displaying in forms and views.
+ * This is the VO class represents activity notification information.
  *
  * @author Bui Sy Nguyen <nguyenbs@gmail.com>
  */
@@ -43,7 +39,7 @@ class ActivityNotice {
     /** @var  mixed $content the content of activity */
     public $content;
 
-    /** @var  mixed $oldContent the content of activity */
+    /** @var  mixed $oldContent the content of model before notifying activity is performed */
     public $oldContent;
 
     /** @var  string[] $contentUpdatedFields the list of updated fields of the content */
