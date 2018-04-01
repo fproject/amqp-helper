@@ -5,7 +5,8 @@ php:
   - hhvm
 install:
   - composer self-update
-  - composer install --prefer-dist --dev
+  - composer update
+  #- composer install --prefer-dist --dev
   - composer info --installed
 before_script:
   - mysql -e 'create database amqp_helper_test;'
