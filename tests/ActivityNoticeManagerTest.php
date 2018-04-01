@@ -19,7 +19,7 @@
 include_once('TestModel01.php');
 include_once('TestModel02.php');
 include_once('TestModel03.php');
-class ActivityNoticeManagerTest extends PHPUnit_Framework_TestCase
+class ActivityNoticeManagerTest extends \PHPUnit\Framework\TestCase
 {
     private $params = [];
 

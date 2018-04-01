@@ -20,10 +20,13 @@ use fproject\amqp\ActivityNoticeSerializer;
 include_once('TestModel01.php');
 include_once('TestModel02.php');
 include_once('TestModel03.php');
-class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
+class ActivityNoticeSerializerTest extends \PHPUnit\Framework\TestCase
 {
     private $params = [];
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData01()
     {
         $this->params = [
@@ -55,6 +58,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($model->field1->format(\fproject\common\utils\DateTimeHelper::DATE_ISO8601_UTC),$data['field1']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData02()
     {
         $this->params = [
@@ -100,6 +106,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('DateTime',$data['endTime']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData03()
     {
         $this->params = [
@@ -118,6 +127,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertEmpty($data);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData04()
     {
         $this->params = [
@@ -153,6 +165,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('field2',$data['model1']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData05()
     {
         $this->params = [
@@ -187,6 +202,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($tmpDate->format(\fproject\common\utils\DateTimeHelper::DATE_ISO8601_UTC),$data['field1']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData06()
     {
         $this->params = [
@@ -224,6 +242,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('DateTime',$data['field1']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData07()
     {
         $this->params = [
@@ -257,6 +278,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('GHI',$data['model1']['field3']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetActivityNoticeConfig01()
     {
         $this->params = [
@@ -292,6 +316,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData08()
     {
         $this->params = [
@@ -331,6 +358,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertNull($data['_explicitType']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData09_serializeDelegateFunction1()
     {
         $this->params = [
@@ -376,6 +406,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('TestModel03',$data['_explicitType']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData10_serializeDelegateFunction2()
     {
         $this->params = [
@@ -417,6 +450,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('TestModel03',$data['_explicitType']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetSerializeData11()
     {
         $this->params = [
@@ -466,6 +502,9 @@ class ActivityNoticeSerializerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('DateTime',$data['endTime']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetActivityNoticeConfig12()
     {
         $this->params = [
