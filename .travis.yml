@@ -3,6 +3,9 @@ php:
   - 5.6
   - 7.2
   - hhvm
+matrix:
+  allow_failures:
+    - php: hhvm
 install:
   - composer self-update
   - composer update
