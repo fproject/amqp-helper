@@ -4,7 +4,7 @@
     "keywords":     ["AMQP", "F-Project", "fproject"],
     "homepage":     "https://github.com/fproject/amqp-helper",
     "type":         "library",
-    "license" : "Apache License 2.0",
+    "license" : "Apache-2.0",
     "authors":      [
         {
           "name": "Bui Sy Nguyen",
